@@ -82,7 +82,7 @@ for i in range(total_days):
 # ========== Output Preview ==========
 st.header("4. Day-wise Itinerary Preview")
 st.write(f"Greetings from TravelAajkal,")
-st.write(f"Client Name:Client_Name")
+st.write(f"Client Name:"{Client_Name})
 
 if daily_particulars:
     for day, detail in daily_particulars.items():
