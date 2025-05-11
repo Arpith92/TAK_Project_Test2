@@ -95,12 +95,18 @@ st.write(f"Departure Date: {departure_date.strftime('%Y-%m-%d')}")
 for i in range(total_days):
     st.write(f"Day {i+1}: {(arrival_date + timedelta(days=i)).strftime('%Y-%m-%d')}")
 
+# Remove consecutive duplicate city names
+route_list = route.split('-')
+final_route = '-'.join([route_list[i] for i in range(len(route_list)) if i == 0 or route_list[i] != route_list[i - 1]])
+# Join cleaned route list with "-"
+route = "-".join(route_list)
+
 
 # ========== Output Preview ==========
 st.header("4. Day-wise Itinerary Preview")
 st.write(f"Greetings from TravelAajkal,")
 st.write(f"Client Name: {Client_Name}")
-st.write(f"Plan: {total_days} {day_1} {plan_night} {night} for {total_pax} {person}")
+st.write(f"*Plan: {total_days} {day_1} {plan_night} {night} for {total_pax} {person}*")
 
 if daily_particulars:
     for day, detail in daily_particulars.items():
