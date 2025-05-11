@@ -132,6 +132,85 @@ for day in range(1, total_days + 1):
     details_line = f"({car_type},{hotel_type},{bhasmarathi_type})"
 
 
+# 6. Initialize inclusions list
+inclusions = []
+
+# 1. If Car Type has value
+if car_type and str(car_type).strip():
+    inclusions.append(f"Entire travel as per itinerary by {car_type}.")
+    inclusions.append("Toll, parking, and driver bata are included.")
+    inclusions.append("Airport/ Railway station pickup and drop.")
+
+# 2. If Bhasmarathi Type has value
+if bhasmarathi_type and str(bhasmarathi_type).strip():
+    inclusions.append(f"{bhasmarathi_desc_str} for {total_pax} {person_text}.")
+    inclusions.append("Bhasm-Aarti pickup and drop.")
+
+# 3. Hotel stay
+# Check if default room type is available in client data
+if "Room Type" in client_data.columns:
+    default_room_configuration = client_data["Room Type"].iloc[0]  # Default value from client data
+
+# Iterate through each row in client_data
+#if "Stay City" in client_data.columns and "Room Type" in client_data.columns:
+#    city_nights = {}
+#    for i in range(len(client_data)):
+#        stay_city = client_data["Stay City"].iloc[i]
+#        room_type = client_data["Room Type"].iloc[i]
+
+        # Skip rows with NaN values in Stay City
+ #       if pd.isna(stay_city):
+            continue
+  #      stay_city = stay_city.strip()  # Clean any extra spaces
+
+        # Compare current Stay City with previous row and count nights
+   #     if i > 0 and client_data["Stay City"].iloc[i] == client_data["Stay City"].iloc[i - 1]:
+    #        city_nights[stay_city] += 1  # Increment nights for the same city
+     #   else:
+      #      city_nights[stay_city] = 1  # Start counting nights for a new city
+
+    # Initialize total night counter
+    total_used_nights = 0
+
+    # Build inclusions dynamically
+    for i in range(len(client_data)):
+   #     stay_city = client_data["Stay City"].iloc[i]
+    #    room_type = client_data["Room Type"].iloc[i]
+
+        # Skip rows with NaN values in Stay City
+     #   if pd.isna(stay_city):
+       #     continue
+      #  stay_city = stay_city.strip()  # Clean any extra spaces
+
+        # Get city name and check if total nights constraint is met
+        #matching_row = stay_city_df[stay_city_df["Stay City"] == stay_city]
+        #if not matching_row.empty:
+         #   city_name = matching_row["City"].iloc[0]
+
+            # Check total nights constraint
+          #  if total_used_nights + city_nights[stay_city] <= total_nights:
+           #     inclusions.append(
+            #        f"{city_nights[stay_city]}Night stay in {city_name} with {room_type} in {hotel_types_str}."
+             #   )
+              #  total_used_nights += city_nights[stay_city]
+            #else:
+             #   break  # Stop if the total nights exceed the allowed limit                
+
+# 4. If Hotel Type has value
+if hotel_type:  # This ensures hotel_type is not blank or None
+    inclusions.append("Standard check-in at 12:00 PM and check-out at 09:00 AM.")
+    inclusions.append("Early check-in and late check-out are subject to room availability.")
+    if hotel_type != 'Standard AC Hotel room only':
+        inclusions.append("Breakfast included.")
+
+# Combine inclusions into a formatted list
+inclusions_section = "*Inclusions:-*\n" + "\n".join([f"{i + 1}. {line}" for i, line in enumerate(inclusions)])
+
+# Combine with the itinerary message
+final_message = itinerary_message + "\n\n" + inclusions_section
+
+
+
 # Payment terms
 payment_terms = """*Payment Terms:-*
 50% advance and remaining 50% after arrival at Ujjain.
