@@ -71,21 +71,44 @@ actual_bhasmarathi_cost = st.number_input("Actual Bhasmarathi Cost", min_value=0
 departure_date = arrival_date + timedelta(days=total_days)
 
 # ========== Travel Code Entry Section ==========
-st.header("2. Enter Travel Codes for Each Day")
+# Assuming you already have df loaded with your 'Code' and 'Particulars' data
 
+# Initialize the daily_particulars and grouped_itinerary
 daily_particulars = {}
+grouped_itinerary = {}
 
+# Loop through the days of the trip and handle the travel code input
 for day in range(1, total_days + 1):
     code_input = st.text_input(f"Travel Code for Day {day} (e.g., ip-id)", key=f"code_day{day}")
     
     if code_input:
+        # Match the code entered by the user
         match_row = df[df['Code'].str.lower() == code_input.lower()]
+        
+        # If the code is found, get the itinerary details
         if not match_row.empty:
-            particulars = match_row.iloc[0]['Particulars']
+            particulars = match_row.iloc[0]['Particulars']  # Assuming 'Particulars' has the itinerary list
+            
+            # Add the itinerary to daily_particulars for that specific day
             daily_particulars[f'Day {day}'] = particulars
-        else:
-            daily_particulars[f'Day {day}'] = 'Code not found in database.'
 
+            # Now, process each entry in the 'Particulars' field
+            for entry in particulars:
+                # Check if the entry has a valid date
+                if entry['Date'] != 'N/A' and pd.notna(entry['Date']):
+                    # Format the date to your desired format
+                    date = pd.to_datetime(entry['Date']).strftime('%d-%b-%Y')
+
+                    # Group by the formatted date
+                    if date not in grouped_itinerary:
+                        grouped_itinerary[date] = []
+
+                    # Append time and description
+                    grouped_itinerary[date].append(f"{entry['Time']}: {entry['Description']}")
+
+        else:
+            # If code not found, return a placeholder message
+            daily_particulars[f'Day {day}'] = 'Code not found in database.'
 # ========== Auto Calculations ==========
 st.header("3. Auto Calculations")
 
@@ -127,7 +150,7 @@ final_route = '-'.join(cleaned_route_list)
 st.header("4. Day-wise Itinerary Preview")
 st.write(f"Greetings from TravelAajkal,")
 st.write(f"Client Name: {Client_Name}")
-st.write(f"*Plan: {total_days} {day_1} {plan_night} {night} {final_route} for {total_pax} {person}*")
+st.write(f"Plan: {total_days} {day_1} {plan_night} {night} {final_route} for {total_pax} {person}")
 
 if daily_particulars:
     for day, detail in daily_particulars.items():
