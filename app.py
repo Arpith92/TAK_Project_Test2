@@ -128,6 +128,37 @@ for day in range(1, total_days + 1):
         else:
             daily_particulars[f'Day {day} ({date_for_day})'] = 'Code not found in database.'
 
+
+
+# Payment terms
+payment_terms = """*Payment Terms:-*
+50% advance and remaining 50% after arrival at Ujjain.
+"""
+
+# Add booking confirmation message and company account details
+booking_confirmation = """For booking confirmation, please make the advance payment to the company's current account provided below.
+*Company Account details:-*
+Account Name: ACHALA HOLIDAYS PVT LTD
+Bank: Axis Bank
+Account No: 923020071937652
+IFSC Code: UTIB0000329
+MICR Code: 452211003
+Branch Address: Ground Floor, 77, Dewas Road, Ujjain, Madhya Pradesh 456010
+
+Regards,
+Team TravelAajKal™️
+Reg. Achala Holidays Pvt Limited
+Visit :- www.travelaajkal.com
+Follow us :- https://www.instagram.com/travelaaj_kal/
+
+*Great news! ACHALA HOLIDAYS PVT LTD is now a DPIIT-recognized Startup by the Government of India.*
+*Thank you for your support as we continue to redefine travel.*
+*Travel Aaj aur Kal with us!*
+
+TravelAajKal® is a registered trademark of Achala Holidays Pvt Ltd.
+"""
+
+
 # ========== Auto Calculations ==========
 
 st.header("3. Auto Calculations")
@@ -152,6 +183,20 @@ st.write(f"Plan: {total_days} {day_1} {plan_night} {night} {final_route} for {to
 if daily_particulars:
     for day, detail in daily_particulars.items():
         st.write(f"**{day}**:\n\n{itinerary}")
+
+final_output = f"""
+{final_message}
+
+{exclusions_section}
+
+{important_notes_section}
+
+{cancellation_policy}
+
+{payment_terms}
+
+{booking_confirmation}
+"""
 
 # ========== Final Submit ==========
 
