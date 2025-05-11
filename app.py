@@ -95,11 +95,20 @@ st.write(f"Departure Date: {departure_date.strftime('%Y-%m-%d')}")
 for i in range(total_days):
     st.write(f"Day {i+1}: {(arrival_date + timedelta(days=i)).strftime('%Y-%m-%d')}")
 
+# Generate route by matching codes
+route_parts = []
+for code in client_data['Code']:
+    matched_routes = code_data.loc[code_data['Code'] == code, 'Route']
+    if not matched_routes.empty:
+        route_parts.append(matched_routes.iloc[0])
+# Join the routes with a separator and ensure no unnecessary spaces
+route = '-'.join(route_parts).replace(' -', '-').replace('- ', '-')
 # Remove consecutive duplicate city names
 route_list = route.split('-')
 final_route = '-'.join([route_list[i] for i in range(len(route_list)) if i == 0 or route_list[i] != route_list[i - 1]])
 # Join cleaned route list with "-"
 route = "-".join(route_list)
+
 
 
 # ========== Output Preview ==========
