@@ -91,6 +91,7 @@ package_hotel_cost = st.number_input("Package Hotel Cost", min_value=0)
 actual_hotel_cost = st.number_input("Actual Hotel Cost", min_value=0)
 package_bhasmarathi_cost = st.number_input("Package Bhasmarathi Cost", min_value=0)
 actual_bhasmarathi_cost = st.number_input("Actual Bhasmarathi Cost", min_value=0)
+Package_Cost=package_car_cost+package_hotel_cost+package_bhasmarathi_cost
 
 departure_date = arrival_date + timedelta(days=total_days)
 
@@ -127,7 +128,6 @@ for day in range(1, total_days + 1):
                         grouped_itinerary[date].append(f"{entry.get('Time', 'N/A')}: {entry.get('Description', 'No description available.')}")
         else:
             daily_particulars[f'Day {day} ({date_for_day})'] = 'Code not found in database.'
-
 
 
 # Payment terms
@@ -186,7 +186,7 @@ st.write(f"Plan: {total_days} {day_1} {plan_night} {night} {final_route} for {to
 if daily_particulars:
     for day, detail in daily_particulars.items():
         st.write(f"**{day}**:\n\n{itinerary}")
-
+st.write("Package Cost:{Package_Cost}/-")
 st.write({final_output})
 
 # ========== Final Submit ==========
