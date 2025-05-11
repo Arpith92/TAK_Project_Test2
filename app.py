@@ -37,7 +37,7 @@ arrival_date = st.date_input("Arrival Date", datetime.today())
 arrival_time = st.time_input("Arrival Time", datetime.now().time())
 departure_time = st.time_input("Departure Time", datetime.now().time())
 
-total_days = st.selectbox("Total Days of Travel", range(1, 11))
+total_days = st.input("total_days")
 total_nights = total_days - 1
 
 total_pax = st.number_input("Total Pax", min_value=1, step=1)
