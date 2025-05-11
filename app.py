@@ -2,26 +2,23 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 
-# ========== Travel Code Lookup ==========
-
-# Load Excel file from GitHub
+# ========== Load Excel Data ==========
 excel_url = 'https://raw.githubusercontent.com/Arpith92/TAK_Project_Test2/main/Code.xlsx'
 df = pd.read_excel(excel_url, sheet_name="Code", engine='openpyxl')
 
 # ========== Helper Functions ==========
 
-# Function to get itinerary details for a given day
+# Fetch itinerary details based on the travel code
 def get_day_itinerary(code_input):
     match_row = df[df['Code'].str.lower() == code_input.lower()]
     if not match_row.empty:
-        particulars = match_row.iloc[0]['Particulars']  # Assuming 'Particulars' has the itinerary list
+        particulars = match_row.iloc[0]['Particulars']
         return particulars
     return None
 
-# Function to generate the route from codes entered
-def generate_route():
+# Generate the travel route based on entered codes
+def generate_route(total_days):
     route_parts = []
-    # Collect all codes entered by the user
     for day in range(1, total_days + 1):
         code_input = st.session_state.get(f"code_day{day}", "")
         if code_input:
@@ -29,42 +26,31 @@ def generate_route():
             if not match_row.empty:
                 route = match_row.iloc[0]['Route']
                 route_parts.append(route)
-
-    # Join the route parts
     raw_route = '-'.join(route_parts).replace(' -', '-').replace('- ', '-')
-
-    # Remove consecutive duplicate city names
     route_list = raw_route.split('-')
-    cleaned_route_list = [route_list[i] for i in range(len(route_list)) if i == 0 or route_list[i] != route_list[i - 1]]
+    cleaned_route = [route_list[i] for i in range(len(route_list)) if i == 0 or route_list[i] != route_list[i - 1]]
+    return '-'.join(cleaned_route)
 
-    # Final route string
-    return '-'.join(cleaned_route_list)
+# ========== Streamlit UI ==========
+st.title("🧳 Travel Package Builder")
 
-# ========== Travel Package Input Form ==========
+st.header("1. Client & Package Details")
 
-st.title("Travel Package Builder")
+# Inputs
+Client_Name = st.text_input("Client Name", "Test Client")
 
-st.header("1. Package Details")
-
-# Dropdown options
 car_options = ["AC Sedan car", "AC Ertiga Car", "AC Innova Crysta", "AC Tempo Travel"]
 hotel_options = [
-    "Non AC Hotel room",
-    "Standard AC Hotel room",
-    "3star AC Hotel room",
-    "3star AC Hotel room with Breakfast",
-    "4star AC Hotel room with Breakfast",
-    "5star AC Hotel room with Breakfast"
+    "Non AC Hotel room", "Standard AC Hotel room", "3star AC Hotel room",
+    "3star AC Hotel room with Breakfast", "4star AC Hotel room with Breakfast", "5star AC Hotel room with Breakfast"
 ]
-city_options = ["Indore", "Ujjain", "Omkareshwar", "Bhopal"]
 bhasma_types = ["Ticket", "Pandit ji", "Nandi hall"]
+city_options = ["Indore", "Ujjain", "Omkareshwar", "Bhopal"]
 
-# User inputs
-Client_Name = st.text_input("Client Name", "test1")
 car_type = st.selectbox("Car Type", car_options)
 hotel_type = st.selectbox("Hotel Type", hotel_options)
-room_type = st.text_input("Room Type", "e.g., Double occupancy 1 room")
-bhasmarathi_required = st.selectbox("Bhasmarathi Requirement", ["Yes", "No"])
+room_type = st.text_input("Room Type", "Double occupancy 1 room")
+bhasmarathi_required = st.selectbox("Bhasmarathi Required", ["Yes", "No"])
 bhasmarathi_type = st.selectbox("Bhasmarathi Type", bhasma_types)
 
 arrival_date = st.date_input("Arrival Date", datetime.today())
@@ -73,14 +59,7 @@ departure_time = st.time_input("Departure Time", datetime.now().time())
 
 total_days = st.number_input("Total Days of Travel", min_value=1, max_value=10, step=1)
 total_nights = total_days - 1
-
 total_pax = st.number_input("Total Pax", min_value=1, step=1)
-
-day_1 = "day" if total_days == 1 else "days"
-night = "" if total_nights == 0 else "night" if total_nights == 1 else "nights"
-plan_night = "" if total_nights == 0 else f"and {total_nights}"
-
-person = "person" if total_pax == 1 else "persons"
 
 arrival_city = st.selectbox("Arrival City", city_options)
 departure_city = st.selectbox("Departure City", city_options)
@@ -91,185 +70,90 @@ package_hotel_cost = st.number_input("Package Hotel Cost", min_value=0)
 actual_hotel_cost = st.number_input("Actual Hotel Cost", min_value=0)
 package_bhasmarathi_cost = st.number_input("Package Bhasmarathi Cost", min_value=0)
 actual_bhasmarathi_cost = st.number_input("Actual Bhasmarathi Cost", min_value=0)
-Package_Cost=int(((package_car_cost+package_hotel_cost+package_bhasmarathi_cost)/1000)*1000 - 1)
+
+# Final package cost rounded down to nearest 1000
+Package_Cost = int(((package_car_cost + package_hotel_cost + package_bhasmarathi_cost) / 1000) * 1000 - 1)
 
 departure_date = arrival_date + timedelta(days=total_days)
 
-# ========== Travel Code Entry Section ==========
-# ========== Travel Code Entry Section ==========
+# ========== Travel Code Entry ==========
+st.header("2. Enter Travel Codes per Day")
 
 daily_particulars = {}
 grouped_itinerary = {}
+itinerary_message = ""
 
 for day in range(1, total_days + 1):
-    # Calculate the date for the current day
-    date_for_day = (arrival_date + timedelta(days=day - 1)).strftime('%d-%b-%Y')
-    
-    # Get the travel code input for the day
-    code_input = st.text_input(f"Travel Code for Day {day} (e.g., ip-id)", key=f"code_day{day}")
-    
+    travel_date = (arrival_date + timedelta(days=day - 1)).strftime('%d-%b-%Y')
+    code_input = st.text_input(f"Travel Code for Day {day}", key=f"code_day{day}")
+
     if code_input:
-        itinerary = get_day_itinerary(code_input)  # Assuming this function fetches the itinerary for the day
-        
+        itinerary = get_day_itinerary(code_input)
         if itinerary:
-            # Store the itinerary details in daily_particulars with day and date
-            daily_particulars[f"Day-{day}:{date_for_day}"] = itinerary
-            
-            # Iterate over the entries in the itinerary
-            for entry in itinerary:
-                # Ensure 'Date' key exists and is not 'N/A' before comparing
-                if isinstance(entry, dict) and 'Date' in entry and entry['Date'] != 'N/A':
-                    if pd.notna(entry['Date']):
-                        date = pd.to_datetime(entry['Date']).strftime('%d-%b-%Y')
-                        
-                        # Group itinerary details by date
-                        if date not in grouped_itinerary:
-                            grouped_itinerary[date] = []
-                        grouped_itinerary[date].append(f"{entry.get('Time', 'N/A')}: {entry.get('Description', 'No description available.')}")
+            # Store itinerary
+            daily_particulars[f"Day-{day} ({travel_date})"] = itinerary
+            itinerary_message += f"*Day-{day} ({travel_date}):*\n{itinerary}\n\n"
         else:
-            daily_particulars[f'Day {day} ({date_for_day})'] = 'Code not found in database.'
+            itinerary_message += f"*Day-{day} ({travel_date}):*\nCode not found in database.\n\n"
 
-    details_line = f"({car_type},{hotel_type},{bhasmarathi_type})"
+# ========== Route Generation ==========
+st.header("3. Final Route")
+final_route = generate_route(total_days)
+st.markdown(f"**Route:** {final_route}")
 
-
-# 6. Initialize inclusions list
+# ========== Inclusions ==========
+st.header("4. Inclusions")
 inclusions = []
 
-# 1. If Car Type has value
-if car_type and str(car_type).strip():
+# Car
+if car_type:
     inclusions.append(f"Entire travel as per itinerary by {car_type}.")
     inclusions.append("Toll, parking, and driver bata are included.")
     inclusions.append("Airport/ Railway station pickup and drop.")
 
-# 2. If Bhasmarathi Type has value
-if bhasmarathi_type and str(bhasmarathi_type).strip():
-    inclusions.append(f"{bhasmarathi_desc_str} for {total_pax} {person_text}.")
+# Bhasmarathi
+if bhasmarathi_required == "Yes":
+    inclusions.append(f"{bhasmarathi_type} for {total_pax} {'person' if total_pax == 1 else 'persons'}.")
     inclusions.append("Bhasm-Aarti pickup and drop.")
 
-# 3. Hotel stay
-# Check if default room type is available in client data
-if "Room Type" in client_data.columns:
-    default_room_configuration = client_data["Room Type"].iloc[0]  # Default value from client data
-
-# Iterate through each row in client_data
-#if "Stay City" in client_data.columns and "Room Type" in client_data.columns:
-#    city_nights = {}
-#    for i in range(len(client_data)):
-#        stay_city = client_data["Stay City"].iloc[i]
-#        room_type = client_data["Room Type"].iloc[i]
-
-        # Skip rows with NaN values in Stay City
- #       if pd.isna(stay_city):
-  #          continue
-  #      stay_city = stay_city.strip()  # Clean any extra spaces
-
-        # Compare current Stay City with previous row and count nights
-   #     if i > 0 and client_data["Stay City"].iloc[i] == client_data["Stay City"].iloc[i - 1]:
-    #        city_nights[stay_city] += 1  # Increment nights for the same city
-     #   else:
-      #      city_nights[stay_city] = 1  # Start counting nights for a new city
-
-    # Initialize total night counter
-    total_used_nights = 0
-
-    # Build inclusions dynamically
-   # for i in range(len(client_data)):
-   #     stay_city = client_data["Stay City"].iloc[i]
-    #    room_type = client_data["Room Type"].iloc[i]
-
-        # Skip rows with NaN values in Stay City
-     #   if pd.isna(stay_city):
-       #     continue
-      #  stay_city = stay_city.strip()  # Clean any extra spaces
-
-        # Get city name and check if total nights constraint is met
-        #matching_row = stay_city_df[stay_city_df["Stay City"] == stay_city]
-        #if not matching_row.empty:
-         #   city_name = matching_row["City"].iloc[0]
-
-            # Check total nights constraint
-          #  if total_used_nights + city_nights[stay_city] <= total_nights:
-           #     inclusions.append(
-            #        f"{city_nights[stay_city]}Night stay in {city_name} with {room_type} in {hotel_types_str}."
-             #   )
-              #  total_used_nights += city_nights[stay_city]
-            #else:
-             #   break  # Stop if the total nights exceed the allowed limit                
-
-# 4. If Hotel Type has value
-if hotel_type:  # This ensures hotel_type is not blank or None
+# Hotel
+if hotel_type:
     inclusions.append("Standard check-in at 12:00 PM and check-out at 09:00 AM.")
     inclusions.append("Early check-in and late check-out are subject to room availability.")
-    if hotel_type != 'Standard AC Hotel room only':
+    if "with Breakfast" in hotel_type:
         inclusions.append("Breakfast included.")
 
-# Combine inclusions into a formatted list
-inclusions_section = "*Inclusions:-*\n" + "\n".join([f"{i + 1}. {line}" for i, line in enumerate(inclusions)])
+# Room
+if room_type:
+    inclusions.append(f"Hotel stay with {room_type} in {hotel_type}.")
 
-# Combine with the itinerary message
-final_message = itinerary_message + "\n\n" + inclusions_section
+# ========== Display All Summary ==========
+st.header("5. Final Package Summary")
 
-# Payment terms
-payment_terms = """*Payment Terms:-*
-50% advance and remaining 50% after arrival at Ujjain.
-"""
+st.subheader("Client Summary")
+st.markdown(f"""
+- **Client Name:** {Client_Name}  
+- **Travel Duration:** {total_days} day(s) / {total_nights} night(s)  
+- **Total Pax:** {total_pax}  
+- **Arrival:** {arrival_city} on {arrival_date.strftime('%d-%b-%Y')} at {arrival_time.strftime('%H:%M')}  
+- **Departure:** {departure_city} on {departure_date.strftime('%d-%b-%Y')} at {departure_time.strftime('%H:%M')}  
+- **Total Package Cost:** ₹{Package_Cost}
+""")
 
-# Add booking confirmation message and company account details
-booking_confirmation = """For booking confirmation, please make the advance payment to the company's current account provided below.
-*Company Account details:-*
-Account Name: ACHALA HOLIDAYS PVT LTD
-Bank: Axis Bank
-Account No: 923020071937652
-IFSC Code: UTIB0000329
-MICR Code: 452211003
-Branch Address: Ground Floor, 77, Dewas Road, Ujjain, Madhya Pradesh 456010
+st.subheader("Itinerary Details")
+st.markdown(itinerary_message)
 
-Regards,
-Team TravelAajKal™️
-Reg. Achala Holidays Pvt Limited
-Visit :- www.travelaajkal.com
-Follow us :- https://www.instagram.com/travelaaj_kal/
+st.subheader("Inclusions")
+st.markdown("*Inclusions:-*\n" + "\n".join([f"{i + 1}. {line}" for i, line in enumerate(inclusions)]))
 
-*Great news! ACHALA HOLIDAYS PVT LTD is now a DPIIT-recognized Startup by the Government of India.*
-*Thank you for your support as we continue to redefine travel.*
-*Travel Aaj aur Kal with us!*
+st.subheader("Payment Terms")
+st.markdown("""*Payment Terms:-*
+1. 50% advance and remaining 50% after arrival at Ujjain.
+2. For booking confirmation, please make the advance payment to the company's current account provided below.
 
-TravelAajKal® is a registered trademark of Achala Holidays Pvt Ltd.
-"""
-final_output = f"""
-{payment_terms}
-{booking_confirmation}
-"""
-
-# ========== Auto Calculations ==========
-
-st.header("3. Auto Calculations")
-
-st.write(f"Total Nights: {total_nights}")
-st.write(f"Departure Date: {departure_date.strftime('%Y-%m-%d')}")
-
-for i in range(total_days):
-    st.write(f"Day {i+1}: {(arrival_date + timedelta(days=i)).strftime('%Y-%m-%d')}")
-
-# ========== Generate Route ==========
-
-final_route = generate_route()
-
-# ========== Output Preview ==========
-
-st.header("4. Day-wise Itinerary Preview")
-st.write(f"Greetings from TravelAajkal,")
-st.write(f"Client Name: {Client_Name}")
-st.write(f"Plan: {total_days} {day_1} {plan_night} {night} {final_route} for {total_pax} {person}")
-
-if daily_particulars:
-    for day, detail in daily_particulars.items():
-        st.write(f"**{day}**:\n\n{itinerary}")
-st.write(f"**Package Cost: ₹{Package_Cost}/-**\n\n{details_line}")
-st.write({final_message})
-st.write({final_output})
-
-# ========== Final Submit ==========
-
-if st.button("Submit"):
-    st.success("Form submitted successfully!")
+*Company Account details:-*  
+- Account Name: **ACHALA HOLIDAYS PVT LTD**  
+- Bank: **Axis Bank**  
+- Account No: **923020071937652**  
+- IFSC Code: **UTIB0000329**
+""")
