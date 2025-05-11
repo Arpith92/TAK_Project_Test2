@@ -43,7 +43,12 @@ total_nights = total_days - 1
 total_pax = st.number_input("Total Pax", min_value=1, step=1)
 
 day_1 = "day" if total_days == 1 else "days"
-night = "night" if total_nights == 1 else "nights"
+#night = "night" if total_nights == 1 else "nights"
+if total_nights == 0:
+    night = ""
+else:
+    night = "night" if total_nights == 1 else "nights"
+
 person = "person" if total_pax == 1 else "persons"
 
 arrival_city = st.selectbox("Arrival City", city_options)
