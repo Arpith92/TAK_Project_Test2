@@ -42,7 +42,7 @@ total_nights = total_days - 1
 
 total_pax = st.number_input("Total Pax", min_value=1, step=1)
 
-day = "day" if total_days == 1 else "days"
+day = "day" if total_days ==1 else "days"
 night = "night" if total_nights == 1 else "nights"
 person = "person" if total_pax == 1 else "persons"
 
