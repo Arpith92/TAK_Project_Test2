@@ -173,7 +173,7 @@ if "Room Type" in client_data.columns:
     total_used_nights = 0
 
     # Build inclusions dynamically
-    for i in range(len(client_data)):
+   # for i in range(len(client_data)):
    #     stay_city = client_data["Stay City"].iloc[i]
     #    room_type = client_data["Room Type"].iloc[i]
 
