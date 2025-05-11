@@ -186,7 +186,7 @@ st.write(f"Plan: {total_days} {day_1} {plan_night} {night} {final_route} for {to
 if daily_particulars:
     for day, detail in daily_particulars.items():
         st.write(f"**{day}**:\n\n{itinerary}")
-        st.write("final_output")
+        st.write("{final_output}")
 
 # ========== Final Submit ==========
 
