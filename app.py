@@ -95,21 +95,33 @@ st.write(f"Departure Date: {departure_date.strftime('%Y-%m-%d')}")
 for i in range(total_days):
     st.write(f"Day {i+1}: {(arrival_date + timedelta(days=i)).strftime('%Y-%m-%d')}")
 
-# Generate route by matching codes
+# ========== Generate Route ==========
 route_parts = []
-for code in client_data['Code']:
-    matched_routes = code_data.loc[code_data['Code'] == code, 'Route']
-    if not matched_routes.empty:
-        route_parts.append(matched_routes.iloc[0])
-# Join the routes with a separator
+
+# Collect all codes entered by user
+for day in range(1, total_days + 1):
+    code_input = st.session_state.get(f"code_day{day}", "")
+    
+    if code_input:
+        match_row = df[df['Code'].str.lower() == code_input.lower()]
+        if not match_row.empty:
+            route = match_row.iloc[0]['Route']
+            route_parts.append(route)
+
+# Join the route parts
 raw_route = '-'.join(route_parts).replace(' -', '-').replace('- ', '-')
+
 # Remove consecutive duplicate city names
 route_list = raw_route.split('-')
 cleaned_route_list = [route_list[i] for i in range(len(route_list)) if i == 0 or route_list[i] != route_list[i - 1]]
-# Join cleaned route list with "-"
+
+# Final route string
 final_route = '-'.join(cleaned_route_list)
-# Output
-route = final_route
+
+# Display final route
+#st.subheader("Generated Route")
+#st.write(final_route)
+
 
 # ========== Output Preview ==========
 st.header("4. Day-wise Itinerary Preview")
