@@ -13,7 +13,6 @@ st.title("Travel Package Builder")
 st.header("1. Package Details")
 
 # Dropdown options
-Client_Name = st.text_input
 car_options = ["AC Sedan car", "AC Ertiga Car", "AC Innova Crysta", "AC Tempo Travel"]
 hotel_options = [
     "Non AC Hotel room",
@@ -27,6 +26,7 @@ city_options = ["Indore", "Ujjain", "Omkareshwar", "Bhopal"]
 bhasma_types = ["Ticket", "Pandit ji", "Nandi hall"]
 
 # User inputs
+Client_Name = st.text_input("Client_Name")
 car_type = st.selectbox("Car Type", car_options)
 hotel_type = st.selectbox("Hotel Type", hotel_options)
 room_type = st.text_input("Room Type", "e.g., Double occupancy 1 room")
