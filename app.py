@@ -13,6 +13,7 @@ st.title("Travel Package Builder")
 st.header("1. Package Details")
 
 # Dropdown options
+Client_Name = st.text_input
 car_options = ["AC Sedan car", "AC Ertiga Car", "AC Innova Crysta", "AC Tempo Travel"]
 hotel_options = [
     "Non AC Hotel room",
@@ -80,6 +81,8 @@ for i in range(total_days):
 
 # ========== Output Preview ==========
 st.header("4. Day-wise Itinerary Preview")
+st.write(f"Greetings from TravelAajkal,)
+st.write(f{Client_Name})
 
 if daily_particulars:
     for day, detail in daily_particulars.items():
