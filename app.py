@@ -185,13 +185,6 @@ if daily_particulars:
         st.write(f"**{day}**:\n\n{itinerary}")
 
 final_output = f"""
-{final_message}
-
-{exclusions_section}
-
-{important_notes_section}
-
-{cancellation_policy}
 
 {payment_terms}
 
