@@ -112,7 +112,7 @@ for day in range(1, total_days + 1):
         
         if itinerary:
             # Store the itinerary details in daily_particulars with day and date
-            daily_particulars[f"Day {day} ({date_for_day})"] = itinerary
+            daily_particulars[f"Day {day} {date_for_day}\n"] = itinerary
             
             # Iterate over the entries in the itinerary
             for entry in itinerary:
