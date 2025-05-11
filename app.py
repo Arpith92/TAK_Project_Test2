@@ -209,8 +209,6 @@ inclusions_section = "*Inclusions:-*\n" + "\n".join([f"{i + 1}. {line}" for i, l
 # Combine with the itinerary message
 final_message = itinerary_message + "\n\n" + inclusions_section
 
-
-
 # Payment terms
 payment_terms = """*Payment Terms:-*
 50% advance and remaining 50% after arrival at Ujjain.
@@ -268,6 +266,7 @@ if daily_particulars:
     for day, detail in daily_particulars.items():
         st.write(f"**{day}**:\n\n{itinerary}")
 st.write(f"**Package Cost: ₹{Package_Cost}/-**\n\n{details_line}")
+st.write({final_message})
 st.write({final_output})
 
 # ========== Final Submit ==========
