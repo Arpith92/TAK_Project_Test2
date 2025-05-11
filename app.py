@@ -95,6 +95,9 @@ actual_bhasmarathi_cost = st.number_input("Actual Bhasmarathi Cost", min_value=0
 departure_date = arrival_date + timedelta(days=total_days)
 
 # ========== Travel Code Entry Section ==========
+day_number = int(day.split(' ')[1])  # Extract the day number from 'Day X'
+date_for_day = (arrival_date + timedelta(days=day_number - 1)).strftime('%d-%b-%Y')
+st.write(f"**{day} ({date_for_day})**: {detail}")
 
 daily_particulars = {}
 grouped_itinerary = {}
@@ -104,7 +107,8 @@ for day in range(1, total_days + 1):
     if code_input:
         itinerary = get_day_itinerary(code_input)
         if itinerary:
-            daily_particulars[f'Day {day}'] = itinerary
+            #daily_particulars[f'Day {day}'] = itinerary
+            daily_particulars[f{day} ({date_for_day})'] = itinerary
             for entry in itinerary:
                 # Ensure 'Date' key exists and is not 'N/A' before comparing
                 if isinstance(entry, dict) and 'Date' in entry and entry['Date'] != 'N/A':
