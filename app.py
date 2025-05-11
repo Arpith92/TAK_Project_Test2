@@ -3,6 +3,7 @@ import pandas as pd
 # Read Excel from GitHub (use raw link)
 excel_url = 'https://raw.githubusercontent.com/Arpith92/TAK_Project_Test2/main/Code.xlsx'
 df = pd.read_excel(excel_url, sheet_name=Code,engine='openpyxl' )
+print(df.head())
 
 # Input: Total number of days
 total_days = int(input("Enter total number of travel days: "))
