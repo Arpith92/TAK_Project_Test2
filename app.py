@@ -106,11 +106,13 @@ for day in range(1, total_days + 1):
         if itinerary:
             daily_particulars[f'Day {day}'] = itinerary
             for entry in itinerary:
-                if entry.get('Date') != 'N/A' and pd.notna(entry.get('Date')):
-                    date = pd.to_datetime(entry['Date']).strftime('%d-%b-%Y')
-                    if date not in grouped_itinerary:
-                        grouped_itinerary[date] = []
-                    grouped_itinerary[date].append(f"{entry['Time']}: {entry['Description']}")
+                # Ensure 'Date' key exists and is not 'N/A' before comparing
+                if isinstance(entry, dict) and 'Date' in entry and entry['Date'] != 'N/A':
+                    if pd.notna(entry['Date']):
+                        date = pd.to_datetime(entry['Date']).strftime('%d-%b-%Y')
+                        if date not in grouped_itinerary:
+                            grouped_itinerary[date] = []
+                        grouped_itinerary[date].append(f"{entry.get('Time', 'N/A')}: {entry.get('Description', 'No description available.')}")
         else:
             daily_particulars[f'Day {day}'] = 'Code not found in database.'
 
