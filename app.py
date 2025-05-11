@@ -112,7 +112,7 @@ for day in range(1, total_days + 1):
         
         if itinerary:
             # Store the itinerary details in daily_particulars with day and date
-            daily_particulars[f"Day {day} {date_for_day}\n"] = itinerary
+            daily_particulars[f"Day {day} {date_for_day}"] = itinerary
             
             # Iterate over the entries in the itinerary
             for entry in itinerary:
@@ -151,7 +151,7 @@ st.write(f"Plan: {total_days} {day_1} {plan_night} {night} {final_route} for {to
 
 if daily_particulars:
     for day, detail in daily_particulars.items():
-        st.write(f"**{day}**: {itinerary}")
+        st.write(f"*{day}*\n: {itinerary}")
 
 # ========== Final Submit ==========
 
