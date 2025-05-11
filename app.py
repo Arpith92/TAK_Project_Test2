@@ -3,11 +3,45 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 # ========== Travel Code Lookup ==========
+
 # Load Excel file from GitHub
 excel_url = 'https://raw.githubusercontent.com/Arpith92/TAK_Project_Test2/main/Code.xlsx'
 df = pd.read_excel(excel_url, sheet_name="Code", engine='openpyxl')
 
+# ========== Helper Functions ==========
+
+# Function to get itinerary details for a given day
+def get_day_itinerary(code_input):
+    match_row = df[df['Code'].str.lower() == code_input.lower()]
+    if not match_row.empty:
+        particulars = match_row.iloc[0]['Particulars']  # Assuming 'Particulars' has the itinerary list
+        return particulars
+    return None
+
+# Function to generate the route from codes entered
+def generate_route():
+    route_parts = []
+    # Collect all codes entered by the user
+    for day in range(1, total_days + 1):
+        code_input = st.session_state.get(f"code_day{day}", "")
+        if code_input:
+            match_row = df[df['Code'].str.lower() == code_input.lower()]
+            if not match_row.empty:
+                route = match_row.iloc[0]['Route']
+                route_parts.append(route)
+
+    # Join the route parts
+    raw_route = '-'.join(route_parts).replace(' -', '-').replace('- ', '-')
+
+    # Remove consecutive duplicate city names
+    route_list = raw_route.split('-')
+    cleaned_route_list = [route_list[i] for i in range(len(route_list)) if i == 0 or route_list[i] != route_list[i - 1]]
+
+    # Final route string
+    return '-'.join(cleaned_route_list)
+
 # ========== Travel Package Input Form ==========
+
 st.title("Travel Package Builder")
 
 st.header("1. Package Details")
@@ -26,7 +60,7 @@ city_options = ["Indore", "Ujjain", "Omkareshwar", "Bhopal"]
 bhasma_types = ["Ticket", "Pandit ji", "Nandi hall"]
 
 # User inputs
-Client_Name = st.text_input("Client_Name","test1")
+Client_Name = st.text_input("Client Name", "test1")
 car_type = st.selectbox("Car Type", car_options)
 hotel_type = st.selectbox("Hotel Type", hotel_options)
 room_type = st.text_input("Room Type", "e.g., Double occupancy 1 room")
@@ -43,18 +77,8 @@ total_nights = total_days - 1
 total_pax = st.number_input("Total Pax", min_value=1, step=1)
 
 day_1 = "day" if total_days == 1 else "days"
-#night = "night" if total_nights == 1 else "nights"
-if total_nights == 0:
-    night = ""
-else:
-    night = "night" if total_nights == 1 else "nights"
-
-
-if total_nights == 0:
-    plan_night = ""
-else:
-    plan_night = f"and {total_nights}"
-
+night = "" if total_nights == 0 else "night" if total_nights == 1 else "nights"
+plan_night = "" if total_nights == 0 else f"and {total_nights}"
 
 person = "person" if total_pax == 1 else "persons"
 
@@ -71,45 +95,27 @@ actual_bhasmarathi_cost = st.number_input("Actual Bhasmarathi Cost", min_value=0
 departure_date = arrival_date + timedelta(days=total_days)
 
 # ========== Travel Code Entry Section ==========
-# Assuming you already have df loaded with your 'Code' and 'Particulars' data
 
-# Initialize the daily_particulars and grouped_itinerary
 daily_particulars = {}
 grouped_itinerary = {}
 
-# Loop through the days of the trip and handle the travel code input
 for day in range(1, total_days + 1):
     code_input = st.text_input(f"Travel Code for Day {day} (e.g., ip-id)", key=f"code_day{day}")
-    
     if code_input:
-        # Match the code entered by the user
-        match_row = df[df['Code'].str.lower() == code_input.lower()]
-        
-        # If the code is found, get the itinerary details
-        if not match_row.empty:
-            particulars = match_row.iloc[0]['Particulars']  # Assuming 'Particulars' has the itinerary list
-            
-            # Add the itinerary to daily_particulars for that specific day
-            daily_particulars[f'Day {day}'] = particulars
-
-            # Now, process each entry in the 'Particulars' field
-            for entry in particulars:
-                # Check if the entry has a valid date
-                if entry['Date'] != 'N/A' and pd.notna(entry['Date']):
-                    # Format the date to your desired format
+        itinerary = get_day_itinerary(code_input)
+        if itinerary:
+            daily_particulars[f'Day {day}'] = itinerary
+            for entry in itinerary:
+                if entry.get('Date') != 'N/A' and pd.notna(entry.get('Date')):
                     date = pd.to_datetime(entry['Date']).strftime('%d-%b-%Y')
-
-                    # Group by the formatted date
                     if date not in grouped_itinerary:
                         grouped_itinerary[date] = []
-
-                    # Append time and description
                     grouped_itinerary[date].append(f"{entry['Time']}: {entry['Description']}")
-
         else:
-            # If code not found, return a placeholder message
             daily_particulars[f'Day {day}'] = 'Code not found in database.'
+
 # ========== Auto Calculations ==========
+
 st.header("3. Auto Calculations")
 
 st.write(f"Total Nights: {total_nights}")
@@ -119,34 +125,11 @@ for i in range(total_days):
     st.write(f"Day {i+1}: {(arrival_date + timedelta(days=i)).strftime('%Y-%m-%d')}")
 
 # ========== Generate Route ==========
-route_parts = []
 
-# Collect all codes entered by user
-for day in range(1, total_days + 1):
-    code_input = st.session_state.get(f"code_day{day}", "")
-    
-    if code_input:
-        match_row = df[df['Code'].str.lower() == code_input.lower()]
-        if not match_row.empty:
-            route = match_row.iloc[0]['Route']
-            route_parts.append(route)
-
-# Join the route parts
-raw_route = '-'.join(route_parts).replace(' -', '-').replace('- ', '-')
-
-# Remove consecutive duplicate city names
-route_list = raw_route.split('-')
-cleaned_route_list = [route_list[i] for i in range(len(route_list)) if i == 0 or route_list[i] != route_list[i - 1]]
-
-# Final route string
-final_route = '-'.join(cleaned_route_list)
-
-# Display final route
-#st.subheader("Generated Route")
-#st.write(final_route)
-
+final_route = generate_route()
 
 # ========== Output Preview ==========
+
 st.header("4. Day-wise Itinerary Preview")
 st.write(f"Greetings from TravelAajkal,")
 st.write(f"Client Name: {Client_Name}")
@@ -157,5 +140,6 @@ if daily_particulars:
         st.write(f"**{day}**: {detail}")
 
 # ========== Final Submit ==========
+
 if st.button("Submit"):
     st.success("Form submitted successfully!")
