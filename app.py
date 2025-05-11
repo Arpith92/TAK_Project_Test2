@@ -95,30 +95,38 @@ actual_bhasmarathi_cost = st.number_input("Actual Bhasmarathi Cost", min_value=0
 departure_date = arrival_date + timedelta(days=total_days)
 
 # ========== Travel Code Entry Section ==========
-day_number = int(day.split(' ')[1])  # Extract the day number from 'Day X'
-date_for_day = (arrival_date + timedelta(days=day_number - 1)).strftime('%d-%b-%Y')
-#st.write(f"**{day} ({date_for_day})**: {detail}")
+# ========== Travel Code Entry Section ==========
 
 daily_particulars = {}
 grouped_itinerary = {}
 
 for day in range(1, total_days + 1):
+    # Calculate the date for the current day
+    date_for_day = (arrival_date + timedelta(days=day - 1)).strftime('%d-%b-%Y')
+    
+    # Get the travel code input for the day
     code_input = st.text_input(f"Travel Code for Day {day} (e.g., ip-id)", key=f"code_day{day}")
+    
     if code_input:
-        itinerary = get_day_itinerary(code_input)
+        itinerary = get_day_itinerary(code_input)  # Assuming this function fetches the itinerary for the day
+        
         if itinerary:
-            #daily_particulars[f'Day {day}'] = itinerary
+            # Store the itinerary details in daily_particulars with day and date
             daily_particulars[f"Day {day} ({date_for_day})"] = itinerary
+            
+            # Iterate over the entries in the itinerary
             for entry in itinerary:
                 # Ensure 'Date' key exists and is not 'N/A' before comparing
                 if isinstance(entry, dict) and 'Date' in entry and entry['Date'] != 'N/A':
                     if pd.notna(entry['Date']):
                         date = pd.to_datetime(entry['Date']).strftime('%d-%b-%Y')
+                        
+                        # Group itinerary details by date
                         if date not in grouped_itinerary:
                             grouped_itinerary[date] = []
                         grouped_itinerary[date].append(f"{entry.get('Time', 'N/A')}: {entry.get('Description', 'No description available.')}")
         else:
-            daily_particulars[f'Day {day}'] = 'Code not found in database.'
+            daily_particulars[f'Day {day} ({date_for_day})'] = 'Code not found in database.'
 
 # ========== Auto Calculations ==========
 
@@ -143,7 +151,7 @@ st.write(f"Plan: {total_days} {day_1} {plan_night} {night} {final_route} for {to
 
 if daily_particulars:
     for day, detail in daily_particulars.items():
-        st.write(f"**{day}**: {detail}")
+        st.write(f"**{day}**: {itinerary}")
 
 # ========== Final Submit ==========
 
