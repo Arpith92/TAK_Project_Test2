@@ -129,23 +129,7 @@ for day in range(1, total_days + 1):
         else:
             daily_particulars[f'Day {day} ({date_for_day})'] = 'Code not found in database.'
 
-    # Part 4: Extract and match types
-    car_types = client_data['Car Type'].dropna().unique()
-    car_types_str = '-'.join(car_types)
-
-    hotel_types = client_data['Hotel Type'].dropna().unique()
-    hotel_types_str = '-'.join(hotel_types)
-
-    bhasmarathi_types = client_data['Bhasmarathi Type'].dropna().unique()
-    bhasmarathi_descriptions = []
-
-    for bhas_type in bhasmarathi_types:
-        match = bhasmarathi_type_df.loc[bhasmarathi_type_df['Bhasmarathi Type'] == bhas_type, 'Description']
-        if not match.empty:
-            bhasmarathi_descriptions.append(match.iloc[0])
-
-    bhasmarathi_desc_str = '-'.join(bhasmarathi_descriptions)
-    details_line = f"({car_types_str},{hotel_types_str},{bhasmarathi_desc_str})"
+    details_line = f"({car_type},{hotel_type},{bhasmarathi_type})"
 
 
 # Payment terms
