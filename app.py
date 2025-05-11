@@ -49,6 +49,13 @@ if total_nights == 0:
 else:
     night = "night" if total_nights == 1 else "nights"
 
+
+if total_nights == 0:
+    plan_night = ""
+else:
+    plan_night = "total_nights"
+
+
 person = "person" if total_pax == 1 else "persons"
 
 arrival_city = st.selectbox("Arrival City", city_options)
@@ -93,7 +100,7 @@ for i in range(total_days):
 st.header("4. Day-wise Itinerary Preview")
 st.write(f"Greetings from TravelAajkal,")
 st.write(f"Client Name: {Client_Name}")
-st.write(f"Plan: {total_days} {day_1} and {total_nights} {night} for {total_pax} {person}")
+st.write(f"Plan: {total_days} {day_1} and {plan_night} {night} for {total_pax} {person}")
 
 if daily_particulars:
     for day, detail in daily_particulars.items():
