@@ -53,7 +53,7 @@ else:
 if total_nights == 0:
     plan_night = ""
 else:
-    plan_night = "and {total_nights}"
+    plan_night = f"and {total_nights}"
 
 
 person = "person" if total_pax == 1 else "persons"
