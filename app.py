@@ -186,10 +186,7 @@ st.write(f"Plan: {total_days} {day_1} {plan_night} {night} {final_route} for {to
 if daily_particulars:
     for day, detail in daily_particulars.items():
         st.write(f"**{day}**:\n\n{itinerary}")
-
-# Display the final output in the Streamlit app
-st.subheader("Final Itinerary Details")
-st.text_area("Preview", final_output, height=800)
+        st.write("final_output")
 
 # ========== Final Submit ==========
 
