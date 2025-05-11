@@ -101,21 +101,21 @@ for code in client_data['Code']:
     matched_routes = code_data.loc[code_data['Code'] == code, 'Route']
     if not matched_routes.empty:
         route_parts.append(matched_routes.iloc[0])
-# Join the routes with a separator and ensure no unnecessary spaces
-route = '-'.join(route_parts).replace(' -', '-').replace('- ', '-')
+# Join the routes with a separator
+raw_route = '-'.join(route_parts).replace(' -', '-').replace('- ', '-')
 # Remove consecutive duplicate city names
-route_list = route.split('-')
-final_route = '-'.join([route_list[i] for i in range(len(route_list)) if i == 0 or route_list[i] != route_list[i - 1]])
+route_list = raw_route.split('-')
+cleaned_route_list = [route_list[i] for i in range(len(route_list)) if i == 0 or route_list[i] != route_list[i - 1]]
 # Join cleaned route list with "-"
-route = "-".join(route_list)
-
-
+final_route = '-'.join(cleaned_route_list)
+# Output
+route = final_route
 
 # ========== Output Preview ==========
 st.header("4. Day-wise Itinerary Preview")
 st.write(f"Greetings from TravelAajkal,")
 st.write(f"Client Name: {Client_Name}")
-st.write(f"*Plan: {total_days} {day_1} {plan_night} {night} for {total_pax} {person}*")
+st.write(f"*Plan: {total_days} {day_1} {plan_night} {night} {final_route} for {total_pax} {person}*")
 
 if daily_particulars:
     for day, detail in daily_particulars.items():
