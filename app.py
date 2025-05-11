@@ -26,7 +26,7 @@ city_options = ["Indore", "Ujjain", "Omkareshwar", "Bhopal"]
 bhasma_types = ["Ticket", "Pandit ji", "Nandi hall"]
 
 # User inputs
-Client_Name = st.text_input("Client_Name")
+Client_Name = st.text_input("Client_Name","test1")
 car_type = st.selectbox("Car Type", car_options)
 hotel_type = st.selectbox("Hotel Type", hotel_options)
 room_type = st.text_input("Room Type", "e.g., Double occupancy 1 room")
