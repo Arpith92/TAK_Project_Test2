@@ -83,6 +83,7 @@ st.write(f"Departure Date: {departure_date.strftime('%Y-%m-%d')}")
 for i in range(total_days):
     st.write(f"Day {i+1}: {(arrival_date + timedelta(days=i)).strftime('%Y-%m-%d')}")
 
+
 # ========== Output Preview ==========
 st.header("4. Day-wise Itinerary Preview")
 st.write(f"Greetings from TravelAajkal,")
