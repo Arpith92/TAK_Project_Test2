@@ -160,7 +160,7 @@ if "Room Type" in client_data.columns:
 
         # Skip rows with NaN values in Stay City
  #       if pd.isna(stay_city):
-            continue
+  #          continue
   #      stay_city = stay_city.strip()  # Clean any extra spaces
 
         # Compare current Stay City with previous row and count nights
