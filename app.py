@@ -91,7 +91,7 @@ package_hotel_cost = st.number_input("Package Hotel Cost", min_value=0)
 actual_hotel_cost = st.number_input("Actual Hotel Cost", min_value=0)
 package_bhasmarathi_cost = st.number_input("Package Bhasmarathi Cost", min_value=0)
 actual_bhasmarathi_cost = st.number_input("Actual Bhasmarathi Cost", min_value=0)
-Package_Cost=((package_car_cost+package_hotel_cost+package_bhasmarathi_cost)/1000)*1000 - 1
+Package_Cost=int(((package_car_cost+package_hotel_cost+package_bhasmarathi_cost)/1000)*1000 - 1)
 
 departure_date = arrival_date + timedelta(days=total_days)
 
