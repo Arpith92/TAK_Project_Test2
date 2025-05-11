@@ -53,7 +53,7 @@ else:
 if total_nights == 0:
     plan_night = ""
 else:
-    plan_night = "total_nights"
+    plan_night = "and {total_nights}"
 
 
 person = "person" if total_pax == 1 else "persons"
@@ -100,7 +100,7 @@ for i in range(total_days):
 st.header("4. Day-wise Itinerary Preview")
 st.write(f"Greetings from TravelAajkal,")
 st.write(f"Client Name: {Client_Name}")
-st.write(f"Plan: {total_days} {day_1} and {plan_night} {night} for {total_pax} {person}")
+st.write(f"Plan: {total_days} {day_1} {plan_night} {night} for {total_pax} {person}")
 
 if daily_particulars:
     for day, detail in daily_particulars.items():
