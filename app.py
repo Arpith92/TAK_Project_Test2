@@ -157,7 +157,10 @@ Follow us :- https://www.instagram.com/travelaaj_kal/
 
 TravelAajKal® is a registered trademark of Achala Holidays Pvt Ltd.
 """
-
+final_output = f"""
+{payment_terms}
+{booking_confirmation}
+"""
 
 # ========== Auto Calculations ==========
 
@@ -184,12 +187,9 @@ if daily_particulars:
     for day, detail in daily_particulars.items():
         st.write(f"**{day}**:\n\n{itinerary}")
 
-final_output = f"""
-
-{payment_terms}
-
-{booking_confirmation}
-"""
+# Display the final output in the Streamlit app
+st.subheader("Final Itinerary Details")
+st.text_area("Preview", final_output, height=800)
 
 # ========== Final Submit ==========
 
